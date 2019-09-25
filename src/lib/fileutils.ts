@@ -115,3 +115,9 @@ const starterAzurePipelines = async (opts: {
 
   return yaml.safeDump(starter, { lineWidth: Number.MAX_SAFE_INTEGER });
 };
+
+/**
+ * Loads existing maintainers file
+ * @param filepath
+ */
+export const loadMaintainersFile = async (filepath: string) => {};
