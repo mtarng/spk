@@ -17,8 +17,5 @@ describe("Getting local host's git config user name and email.", () => {
 
     expect(typeof gitNameAndEmail[0]).toBe("string");
     expect(typeof gitNameAndEmail[1]).toBe("string");
-
-    logger.info(gitNameAndEmail[0]);
-    logger.info(gitNameAndEmail[1]);
   });
 });
