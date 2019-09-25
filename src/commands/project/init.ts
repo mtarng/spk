@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { exec } from "../../lib/shell";
 import { logger } from "../../logger";
 import { generateAzurePipelinesYaml } from "../../lib/fileutils";
+import { getGitNameAndEmail } from "../../lib/gitutils";
 import { IBedrockFile, IMaintainersFile } from "../../types";
 
 /**
@@ -132,19 +133,7 @@ const generateMaintainersFile = async (
   logger.info(`Generating maintainers.yaml file in ${absProjectPath}`);
 
   // Get default name/email from git host
-  const [gitName, gitEmail] = await Promise.all(
-    ["name", "email"].map(async field => {
-      try {
-        const gitField = await exec("git", ["config", `user.${field}`]);
-        return gitField;
-      } catch (_) {
-        logger.warn(
-          `Unable to parse git.${field} from host. Leaving blank value in maintainers.yaml file`
-        );
-        return "";
-      }
-    })
-  );
+  const gitNameAndEmail = await getGitNameAndEmail();
 
   // Populate maintainers file
   const maintainersFile: IMaintainersFile = absPackagePaths.reduce<
@@ -170,8 +159,8 @@ const generateMaintainersFile = async (
         "./": {
           maintainers: [
             {
-              email: gitEmail,
-              name: gitName
+              email: gitNameAndEmail[1],
+              name: gitNameAndEmail[0]
             }
           ]
         }

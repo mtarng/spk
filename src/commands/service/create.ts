@@ -49,6 +49,10 @@ export const createCommandDecorator = (command: commander.Command): void => {
             `maintainerEmail must be of type 'string', ${typeof maintainerEmail} given.`
           );
         }
+
+        // TODO: Check that this is a spk/bedrock repository and that the parent directory is initialized.
+        // This check should be in a shared library
+        
         await createService(projectPath, serviceName, {
           maintainerName,
           maintainerEmail
