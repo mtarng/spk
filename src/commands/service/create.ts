@@ -2,7 +2,10 @@ import commander from "commander";
 import path from "path";
 import shelljs from "shelljs";
 import { logger } from "../../logger";
-import { generateAzurePipelinesYaml } from "../../lib/fileutils";
+import {
+  generateAzurePipelinesYaml,
+  createGitignoreFile
+} from "../../lib/fileutils";
 
 /**
  * Adds the init command to the commander command object
@@ -49,7 +52,7 @@ export const createCommandDecorator = (command: commander.Command): void => {
 
         // TODO: Check that this is a spk/bedrock repository and that the parent directory is initialized.
         // This check should be in a shared library
-        
+
         await createService(projectPath, serviceName, {
           maintainerName,
           maintainerEmail
@@ -88,6 +91,9 @@ export const createService = async (
 
   // Create azure pipelines yaml in directory
   await generateAzurePipelinesYaml(rootProjectPath, newServiceDir);
+
+  // Create .gitignore file in directory
+  await createGitignoreFile(rootProjectPath, newServiceDir);
 
   // add maintainers to file in parent repo file
 

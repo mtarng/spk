@@ -9,9 +9,7 @@ export const getGitNameAndEmail = async () => {
         const gitField = await exec("git", ["config", `user.${field}`]);
         return gitField;
       } catch (_) {
-        logger.warn(
-          `Unable to parse git.${field} from host. Leaving blank value in maintainers.yaml file`
-        );
+        logger.warn(`Unable to parse git.${field} from host.`);
         return "";
       }
     })

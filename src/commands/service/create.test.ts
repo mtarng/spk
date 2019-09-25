@@ -39,7 +39,7 @@ describe("Adding a service to a repo directory", () => {
     expect(fs.existsSync(serviceDirPath)).toBe(true);
 
     // Verify new azure-pipelines created
-    const filepaths = ["azure-pipelines.yaml"].map(filename =>
+    const filepaths = ["azure-pipelines.yaml", ".gitignore"].map(filename =>
       path.join(serviceDirPath, filename)
     );
 

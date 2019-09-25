@@ -121,3 +121,35 @@ const starterAzurePipelines = async (opts: {
  * @param filepath
  */
 export const loadMaintainersFile = async (filepath: string) => {};
+
+/**
+ * Create .gitignore file in given directory
+ */
+export const createGitignoreFile = async (
+  projectRoot: string,
+  targetPath: string
+) => {
+  const absProjectRoot = path.resolve(projectRoot);
+  const absPackagePath = path.resolve(targetPath);
+
+  logger.info(`Generating .gitignore file in ${absPackagePath}`);
+
+  // Check if .gitignore already exists; if it does, skip generation
+  const gitignorePath = path.join(absPackagePath, ".gitignore");
+  logger.debug(`Writing azure-pipelines.yaml file to ${gitignorePath}`);
+  if (fs.existsSync(gitignorePath)) {
+    logger.warn(
+      `Existing .gitignore found at ${gitignorePath}, skipping generation`
+    );
+  } else {
+    const starterYaml = await starterAzurePipelines({
+      relProjectPaths: [path.relative(absProjectRoot, absPackagePath)]
+    });
+    // Write
+    await promisify(fs.writeFile)(
+      gitignorePath,
+      "# Starter .gitignore file",
+      "utf8"
+    );
+  }
+};
