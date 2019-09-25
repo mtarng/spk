@@ -19,18 +19,15 @@ export const createCommandDecorator = (command: commander.Command): void => {
     .option(
       "-m, --maintainer-name <maintainer-name>",
       "The name of the primary maintainer for this service",
-      "maintainer name"
+      "my-maintainer-name"
     )
     .option(
       "-e, --maintainer-email <maintainer-email>",
       "The email of the primary maintainer for this service",
-      "maintainer email"
+      "my-maintainer-email"
     )
     .action(async (serviceName, opts) => {
-      const {
-        maintainerName = "maintainer name",
-        maintainerEmail = "maintainer email"
-      } = opts;
+      const { maintainerName, maintainerEmail } = opts;
       const projectPath = process.cwd();
       try {
         // Type check all parsed command line args here.
@@ -78,7 +75,7 @@ export const createService = async (
   serviceName: string,
   opts?: { maintainerName: string; maintainerEmail: string }
 ) => {
-  const { maintainerName = "name", maintainerEmail = "email" } = opts || {};
+  const { maintainerName, maintainerEmail } = opts || {};
 
   logger.info(`Adding Service: ${serviceName}, to Project: ${rootProjectPath}`);
   logger.info(
