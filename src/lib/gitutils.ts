@@ -68,3 +68,24 @@ export const gitPushBranch = async (branchName: string) => {
     logger.warn(`unable to push git branch ${branchName}.`);
   }
 };
+
+// TODO: change logic to print out, or return a link to where to create a PR.
+export const gitRequestPullBranch = async (
+  baseBranchName: string,
+  newBranchName: string
+) => {
+  try {
+    await exec("git", [
+      "push",
+      "request-pull",
+      `${newBranchName}`,
+      `${baseBranchName}`
+    ]);
+  } catch (_) {
+    logger.warn(
+      `unable to create new PR for git branch ${newBranchName} onto base ${baseBranchName}.`
+    );
+  }
+};
+
+// TODO: port to simple-git, then do work to create link to manually create PR, only supporting github and azdo repos.
