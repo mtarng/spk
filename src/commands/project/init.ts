@@ -6,7 +6,7 @@ import shelljs from "shelljs";
 import { promisify } from "util";
 import { logger } from "../../logger";
 import { generateAzurePipelinesYaml } from "../../lib/fileutils";
-import { getGitNameAndEmail } from "../../lib/gitutils";
+import { gitGetNameAndEmail } from "../../lib/gitutils";
 import { IBedrockFile, IMaintainersFile } from "../../types";
 
 /**
@@ -132,7 +132,7 @@ const generateMaintainersFile = async (
   logger.info(`Generating maintainers.yaml file in ${absProjectPath}`);
 
   // Get default name/email from git host
-  const gitNameAndEmail = await getGitNameAndEmail();
+  const gitNameAndEmail = await gitGetNameAndEmail();
 
   // Populate maintainers file
   const maintainersFile: IMaintainersFile = absPackagePaths.reduce<
