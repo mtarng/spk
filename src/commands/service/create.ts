@@ -8,7 +8,7 @@ import {
 } from "../../lib/fileutils";
 
 /**
- * Adds the init command to the commander command object
+ * Adds the create command to the service command object
  *
  * @param command Commander command object to decorate
  */
@@ -18,6 +18,11 @@ export const createCommandDecorator = (command: commander.Command): void => {
     .alias("c")
     .description(
       "Add a new service into this initialized spk project repository"
+    )
+    .option(
+      "-d, --packages-dir <dir>",
+      "The directory containing the mono-repo packages.",
+      ""
     )
     .option(
       "-m, --maintainer-name <maintainer-name>",
@@ -30,13 +35,18 @@ export const createCommandDecorator = (command: commander.Command): void => {
       "my-maintainer-email"
     )
     .action(async (serviceName, opts) => {
-      const { maintainerName, maintainerEmail } = opts;
+      const { packagesDir, maintainerName, maintainerEmail } = opts;
       const projectPath = process.cwd();
       try {
         // Type check all parsed command line args here.
         if (typeof serviceName !== "string") {
           throw new Error(
             `serviceName must be of type 'string', ${typeof serviceName} given.`
+          );
+        }
+        if (typeof packagesDir !== "string") {
+          throw new Error(
+            `packagesDir must be of type 'string', ${typeof packagesDir} given.`
           );
         }
         if (typeof maintainerName !== "string") {
@@ -53,7 +63,7 @@ export const createCommandDecorator = (command: commander.Command): void => {
         // TODO: Check that this is a spk/bedrock repository and that the parent directory is initialized.
         // This check should be in a shared library
 
-        await createService(projectPath, serviceName, {
+        await createService(projectPath, serviceName, packagesDir, {
           maintainerName,
           maintainerEmail
         });
@@ -76,17 +86,22 @@ export const createCommandDecorator = (command: commander.Command): void => {
 export const createService = async (
   rootProjectPath: string,
   serviceName: string,
+  packagesDir: string,
   opts?: { maintainerName: string; maintainerEmail: string }
 ) => {
   const { maintainerName, maintainerEmail } = opts || {};
 
-  logger.info(`Adding Service: ${serviceName}, to Project: ${rootProjectPath}`);
+  logger.info(
+    `Adding Service: ${serviceName}, to Project: ${rootProjectPath} under directory: ${packagesDir}`
+  );
   logger.info(
     `MaintainerName: ${maintainerName}, MaintainerEmail: ${maintainerEmail}`
   );
 
+  // TODO: consider if there is a '/packages' directory to place all services under.
+  const newServiceDir = path.join(rootProjectPath, packagesDir, serviceName);
+
   // Mkdir
-  const newServiceDir = path.join(rootProjectPath, serviceName);
   shelljs.mkdir("-p", newServiceDir);
 
   // Create azure pipelines yaml in directory
