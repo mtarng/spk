@@ -6,6 +6,12 @@ import {
   generateAzurePipelinesYaml,
   createGitignoreFile
 } from "../../lib/fileutils";
+import {
+  gitCheckoutNewBranch,
+  gitCommitDir,
+  gitPushBranch,
+  gitDeleteBranch
+} from "../../lib/gitutils";
 
 /**
  * Adds the create command to the service command object
@@ -34,8 +40,13 @@ export const createCommandDecorator = (command: commander.Command): void => {
       "The email of the primary maintainer for this service",
       "my-maintainer-email"
     )
+    .option(
+      "-p, --git-push",
+      "Enable automatic git branch creation and push",
+      false
+    )
     .action(async (serviceName, opts) => {
-      const { packagesDir, maintainerName, maintainerEmail } = opts;
+      const { packagesDir, maintainerName, maintainerEmail, gitPush } = opts;
       const projectPath = process.cwd();
       try {
         // Type check all parsed command line args here.
@@ -59,11 +70,16 @@ export const createCommandDecorator = (command: commander.Command): void => {
             `maintainerEmail must be of type 'string', ${typeof maintainerEmail} given.`
           );
         }
+        if (typeof gitPush !== "boolean") {
+          throw new Error(
+            `gitPush must be of type 'boolean', ${typeof gitPush} given.`
+          );
+        }
 
         // TODO: Check that this is a spk/bedrock repository and that the parent directory is initialized.
         // This check should be in a shared library
 
-        await createService(projectPath, serviceName, packagesDir, {
+        await createService(projectPath, serviceName, packagesDir, gitPush, {
           maintainerName,
           maintainerEmail
         });
@@ -87,6 +103,7 @@ export const createService = async (
   rootProjectPath: string,
   serviceName: string,
   packagesDir: string,
+  gitPush: boolean,
   opts?: { maintainerName: string; maintainerEmail: string }
 ) => {
   const { maintainerName, maintainerEmail } = opts || {};
@@ -113,4 +130,8 @@ export const createService = async (
   // add maintainers to file in parent repo file
 
   // Add relevant bedrock info to parent bedrock.yaml
+
+  // If requested, create new git branch, commit, and push
+  if (gitPush) {
+  }
 };

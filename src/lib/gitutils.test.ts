@@ -5,7 +5,8 @@ import {
   gitGetCurrentBranch,
   gitCheckoutBranch,
   gitCheckoutNewBranch,
-  gitDeleteBranch
+  gitDeleteBranch,
+  gitPushBranch
 } from "./gitutils";
 
 beforeAll(() => {
@@ -38,13 +39,14 @@ describe("Get current git branch", () => {
 });
 
 describe("Get create git branch", () => {
-  test("create branch", async () => {
+  test("create new branch and commit.", async () => {
     let initialBranch = await gitGetCurrentBranch();
     expect(typeof initialBranch).toBe("string");
     logger.info(`current branch ${initialBranch}`);
 
     let newBranch = uuid();
 
+    // Create and checkout new branch
     logger.info("Creating and checking out new branch.");
     await gitCheckoutNewBranch(newBranch);
     let currentBranch = await gitGetCurrentBranch();
@@ -52,14 +54,18 @@ describe("Get create git branch", () => {
     expect(currentBranch).toEqual(newBranch);
     logger.info(`current branch ${currentBranch}`);
 
-    logger.info("Checking out initial branch.");
+    // Push branch
+    await gitPushBranch(currentBranch);
 
+    // Checkout original branch
+    logger.info("Checking out initial branch.");
     await gitCheckoutBranch(initialBranch);
     currentBranch = await gitGetCurrentBranch();
     expect(typeof currentBranch).toBe("string");
     expect(currentBranch).toEqual(initialBranch);
     logger.info(`current branch ${currentBranch}`);
 
+    // Delete new temp branch
     await gitDeleteBranch(newBranch);
   });
 });

@@ -29,7 +29,6 @@ export const gitGetCurrentBranch = async () => {
 };
 
 export const gitCheckoutBranch = async (branchName: string) => {
-  // Create new branch
   try {
     await exec("git", ["checkout", `${branchName}`]);
   } catch (_) {
@@ -38,7 +37,6 @@ export const gitCheckoutBranch = async (branchName: string) => {
 };
 
 export const gitCheckoutNewBranch = async (branchName: string) => {
-  // Create new branch
   try {
     await exec("git", ["checkout", "-b", `${branchName}`]);
   } catch (_) {
@@ -47,10 +45,26 @@ export const gitCheckoutNewBranch = async (branchName: string) => {
 };
 
 export const gitDeleteBranch = async (branchName: string) => {
-  // Create new branch
   try {
     await exec("git", ["branch", "-D", `${branchName}`]);
   } catch (_) {
     logger.warn(`unable to delete git branch ${branchName}.`);
+  }
+};
+
+export const gitCommitDir = async (directory: string, branchName: string) => {
+  try {
+    await exec("git", ["add", `${directory}`]);
+    await exec("git", ["commit", "-m", `Adding new service: ${branchName}`]);
+  } catch (_) {
+    logger.warn(`unable to push git branch ${branchName}.`);
+  }
+};
+
+export const gitPushBranch = async (branchName: string) => {
+  try {
+    await exec("git", ["push", "-u", "origin", `${branchName}`]);
+  } catch (_) {
+    logger.warn(`unable to push git branch ${branchName}.`);
   }
 };
