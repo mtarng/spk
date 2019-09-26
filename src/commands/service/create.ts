@@ -8,9 +8,11 @@ import {
 } from "../../lib/fileutils";
 import {
   gitCheckoutNewBranch,
+  gitGetCurrentBranch,
   gitCommitDir,
   gitPushBranch,
-  gitDeleteBranch
+  gitDeleteBranch,
+  gitCheckoutBranch
 } from "../../lib/gitutils";
 
 /**
@@ -133,5 +135,11 @@ export const createService = async (
 
   // If requested, create new git branch, commit, and push
   if (gitPush) {
+    const currentBranch = await gitGetCurrentBranch();
+    await gitCheckoutNewBranch(serviceName);
+    await gitCommitDir(newServiceDir, serviceName);
+    await gitPushBranch(serviceName);
+    await gitCheckoutBranch(currentBranch);
+    await gitDeleteBranch(serviceName);
   }
 };
