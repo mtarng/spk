@@ -59,5 +59,7 @@ describe("Get create git branch", () => {
     expect(typeof currentBranch).toBe("string");
     expect(currentBranch).toEqual(initialBranch);
     logger.info(`current branch ${currentBranch}`);
+
+    await gitDeleteBranch(newBranch);
   });
 });
