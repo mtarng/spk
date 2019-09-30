@@ -153,3 +153,5 @@ export const createGitignoreFile = async (
     );
   }
 };
+
+// yaml.safeParse("file.yaml") -> cast/assert is ____ file
