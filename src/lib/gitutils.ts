@@ -69,6 +69,65 @@ export const gitPushBranch = async (branchName: string) => {
   }
 };
 
+const getOriginUrl = async () => {
+  try {
+    const originUrl = await exec("git", [
+      "config",
+      "--get",
+      "remote.origin.url"
+    ]);
+    logger.debug(`Got git origin url ${originUrl}`);
+    return originUrl;
+  } catch (_) {
+    logger.warn(`unable to git origin URL.`);
+  }
+  return "";
+};
+
+// azdo repo: https://dev.azure.com/{organization}/{project}/_git/{repo-name}/pullrequestcreate?sourceRef={new-branch}&targetRef={base-branch}
+// https://dev.azure.com/mitarng/spk-test-project/_git/new-repo/pullrequestcreate?sourceRef=new-branch&targetRef=master
+
+// https://github.com/{user}/{name}/compare/{base-branch}...{new-branch}?expand=1
+
+export const gitGetPullRequestLink = async (
+  baseBranch: string,
+  newBranch: string
+) => {
+  const originUrl = await getOriginUrl();
+  const isGithubRepo = originUrl.toLowerCase().includes("github.com");
+  const isAzDoRepo = originUrl.toLowerCase().includes("github.com");
+
+  if (isGithubRepo) {
+    let organization = "my-github-org";
+    let repoName = "my-repository";
+
+    if (originUrl.includes("@")) {
+      // SSH URL - git@github.com:{organization}/{repoName}.git
+      organization = "my ssh org";
+      repoName = "my ssh repo name";
+    } else if (originUrl.includes("https")) {
+      // TODO: Handle HTTPS URL:
+      organization = "my https org";
+      repoName = "my https repo name";
+    }
+
+    logger.debug("github repo found.");
+    return `https://github.com/${organization}/${repoName}/compare/${baseBranch}...${newBranch}?expand=1`;
+  } else if (isAzDoRepo) {
+    logger.debug("Azure DevOps repo found.");
+
+    // git@ssh.dev.azure.com:v3/mitarng/spk-test-project/new-repo
+    // https://mitarng@dev.azure.com/mitarng/spk-test-project/_git/new-repo
+
+    return `https://dev.azure.com/${organization}/${project}/_git/${repoName}/pullrequestcreate?sourceRef=${newBranch}&targetRef=${baseBranch}`;
+  } else {
+    logger.warn(
+      "Could not determine origin repository, or it is not a supported type."
+    );
+    return "Could not determine origin repository. Please check for the newly pushed branch and open a PR manually.";
+  }
+};
+
 // TODO: change logic to print out, or return a link to where to create a PR.
 export const gitRequestPullBranch = async (
   baseBranchName: string,
