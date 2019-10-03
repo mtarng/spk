@@ -21,6 +21,11 @@ interface IUser {
  * Used to capture service meta-information regarding how to deploy
  */
 export interface IBedrockFile {
+  rings: {
+    [ringName: string]: {
+      isDefault?: boolean;
+    };
+  };
   services: {
     [relativeDirectory: string]: {
       helm: {

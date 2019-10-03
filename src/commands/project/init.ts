@@ -200,11 +200,14 @@ const generateMaintainersFile = async (
  * Writes out a default bedrock.yaml
  *
  * @param targetPath Path to generate the the bedrock.yaml file in
+ * @param opts additional optional args
  */
 const generateBedrockFile = async (
   projectPath: string,
-  packagePaths: string[]
+  packagePaths: string[],
+  opts: { defaultRing?: string } = {}
 ) => {
+  const { defaultRing = "qa" } = opts;
   const absProjectPath = path.resolve(projectPath);
   const absPackagePaths = packagePaths.map(p => path.resolve(p));
   logger.info(`Generating bedrock.yaml file in ${absProjectPath}`);
@@ -221,7 +224,14 @@ const generateBedrockFile = async (
       };
       return file;
     },
-    { services: {} }
+    {
+      rings: {
+        [defaultRing]: {
+          isDefault: true
+        }
+      },
+      services: {}
+    }
   );
 
   // Check if a bedrock.yaml already exists; skip write if present

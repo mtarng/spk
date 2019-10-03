@@ -3,7 +3,7 @@ import yaml from "js-yaml";
 import path from "path";
 import { promisify } from "util";
 import { logger } from "../logger";
-import { IAzurePipelinesYaml, IBedrockFile, IMaintainersFile } from "../types";
+import { IAzurePipelinesYaml } from "../types";
 
 /**
  * Writes out the starter azure-pipelines.yaml file to `targetPath`
