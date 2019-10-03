@@ -23,10 +23,12 @@ const Azure = async (
   serverURL?: string
 ): Promise<IGit<GitPullRequest>> => {
   // Encapsulate reusable objects
-  const hiddenPAT = PAT.split("")
+  const obfuscatedPAT = PAT.split("")
     .map((char, i, arr) => (i > arr.length - 5 ? char : "*"))
     .join("");
-  logger.info(`Attempting to authenticate with Azure using PAT '${hiddenPAT}'`);
+  logger.info(
+    `Attempting to authenticate with Azure using PAT '${obfuscatedPAT}'`
+  );
   const authHandler = azdo.getPersonalAccessTokenHandler(PAT);
   const connection = new azdo.WebApi(orgUrl, authHandler);
   const api = await connection.getGitApi(serverURL);
@@ -59,7 +61,7 @@ const Azure = async (
       }
 
       logger.info(
-        `Retrieving repositories associated with Azure PAT '${hiddenPAT}'`
+        `Retrieving repositories associated with Azure PAT '${obfuscatedPAT}'`
       );
       const repos = await api.getRepositories();
       logger.info(
@@ -109,12 +111,6 @@ const Azure = async (
       return api.createPullRequest(pullRequest, repoToPR.id!);
     }
   };
-};
-
-const AZGitAPI = async (orgUrl: string, PAT: string) => {
-  const authHandler = azdo.getPersonalAccessTokenHandler(PAT);
-  const connection = new azdo.WebApi(orgUrl, authHandler);
-  return connection.getGitApi();
 };
 
 (async () => {
